@@ -1,0 +1,11 @@
+name = "Color"
+package = "color"
+type = "string"
+
+values = [
+  "RED",
+  "BLUE",
+  "GREEN",
+  "WHITE",
+  "BLACK"
+]
