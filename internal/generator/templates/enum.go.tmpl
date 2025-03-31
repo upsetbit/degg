@@ -2,87 +2,81 @@ package {{.Package}}
 
 import (
 	"errors"
+	"fmt"
+	"strings"
 )
 
 type (
-	{{.EnumName}} string
+	{{.EnumName}} {{.EnumType}}
 )
 
 const (
 	_enumName = "{{.EnumName}}"
 
-	RED   {{.EnumName}} = "RED"
-	BLUE  {{.EnumName}} = "BLUE"
-	GREEN {{.EnumName}} = "GREEN"
-	WHITE {{.EnumName}} = "WHITE"
-	BLACK {{.EnumName}} = "BLACK"
-
-	_unknown {{.EnumName}} = ""
+	{{range .Values}}{{.Key}} {{$.EnumName}} = {{.Value}}
+	{{end}}
+	_unknown {{.EnumName}} = {{if .IsTypeString}}""{{else}}0{{end}}
 )
 
 var (
-	{{.Error.InvalidValue}} = errors.New("invalid value for {{.EnumName}}, must be one of [{{.EnumValuesListed}}]")
+	{{.ErrorInvalid}} = errors.New("invalid value for {{.EnumName}}, must be one of {{.AllValues}}")
 )
 
-func FromValue({{.EnumNameLetter}} string) ({{.EnumName}}, error) {
+func Values() []{{.EnumName}} {
+	return []{{.EnumName}}{
+	{{range .Values}}	{{.Key}},
+	{{end}}	}
+}
+
+func StringValues() []string {
+	return []string{
+	{{range .Values}}	"{{.Key}}",
+	{{end}}	}
+}
+
+func FromValue({{.EnumNameLetter}} {{.EnumType}}) ({{.EnumName}}, error) {
 	switch {{.EnumNameLetter}} {
-	case "RED":
-		return RED, nil
-	case "BLUE":
-		return BLUE, nil
-	case "GREEN":
-		return GREEN, nil
-	case "WHITE":
-		return WHITE, nil
-	case "BLACK":
-		return BLACK, nil
-	default:
-		return _unknown, InvalidColorErr
+	{{range .Values}}case {{.Value}}:
+		return {{.Key}}, nil
+	{{end}}default:
+		return _unknown, {{.ErrorInvalid}}
 	}
 }
 
 func FromName({{.EnumNameLetter}} string) ({{.EnumName}}, error) {
-	switch {{.EnumNameLetter}} {
-	case "RED":
-		return RED, nil
-	case "BLUE":
-		return BLUE, nil
-	case "GREEN":
-		return GREEN, nil
-	case "WHITE":
-		return WHITE, nil
-	case "BLACK":
-		return BLACK, nil
-	default:
-		return _unknown, InvalidColorErr
+	switch strings.ToUpper({{.EnumNameLetter}}) {
+	{{range .Values}}case "{{.Key}}":
+		return {{.Key}}, nil
+	{{end}}default:
+		return _unknown, {{.ErrorInvalid}}
 	}
 }
 
 func ({{.EnumNameLetter}} {{.EnumName}}) String() string {
-	return string({{.EnumNameLetter}})
-}
+{{if .IsTypeString}}	return string({{.EnumNameLetter}})
+{{else}}	switch {{.EnumNameLetter}} {
+	{{range .Values}}case {{.Key}}:
+		return "{{.Key}}"
+	{{end}}default:
+		return fmt.Sprintf("{{.EnumName}}(%d)", int({{.EnumNameLetter}}))
+	}
+{{end}}}
 
 func ({{.EnumNameLetter}} {{.EnumName}}) Int() int {
-	switch {{.EnumNameLetter}} {
-	case RED:
-		return 0
-	case BLUE:
-		return 1
-	case GREEN:
-		return 2
-	case WHITE:
-		return 3
-	case BLACK:
-		return 4
-	default:
+{{if .IsTypeInt}}	return int({{.EnumNameLetter}})
+{{else}}	switch {{.EnumNameLetter}} {
+	{{range $index, $element := .Values}}case {{$element.Key}}:
+		return {{$index}}
+	{{end}}default:
 		return -1
 	}
-}
+{{end}}}
 
 func ({{.EnumNameLetter}} {{.EnumName}}) Code() string {
 	return _enumName + "." + {{.EnumNameLetter}}.String()
 }
 
 func ({{.EnumNameLetter}} {{.EnumName}}) Repr() string {
-	return _enumName + "(" + {{.EnumNameLetter}}.String() + ")"
-}
+{{if .IsTypeString}}	return fmt.Sprintf("%s(%q)", _enumName, string({{.EnumNameLetter}}))
+{{else}}	return fmt.Sprintf("%s(%d)", _enumName, int({{.EnumNameLetter}}))
+{{end}}}

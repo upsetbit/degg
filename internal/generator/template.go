@@ -1,8 +1,11 @@
 package generator
 
 import (
+	"bytes"
 	"embed"
+	"fmt"
 	"path"
+	"text/template"
 )
 
 var (
@@ -10,13 +13,18 @@ var (
 	templates embed.FS
 )
 
-func readTemplate(filename string) (*string, error) {
-	p := path.Join("templates", filename+".tmpl")
-	b, err := templates.ReadFile(p)
+func processTemplate(templateFileName string, data *GeneratorInput) (string, error) {
+	templatePath := path.Join("templates", templateFileName+".tmpl")
+
+	t, err := template.ParseFS(templates, templatePath)
 	if err != nil {
-		return nil, err
+		return "", fmt.Errorf("failed to parse template %s: %w", templatePath, err)
 	}
 
-	s := string(b)
-	return &s, nil
+	var buf bytes.Buffer
+	if err := t.Execute(&buf, data); err != nil {
+		return "", fmt.Errorf("failed to execute template %s: %w", templatePath, err)
+	}
+
+	return buf.String(), nil
 }

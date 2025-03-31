@@ -2,6 +2,8 @@ package capital
 
 import (
 	"errors"
+	"fmt"
+	"strings"
 )
 
 type (
@@ -26,10 +28,40 @@ const (
 )
 
 var (
-	InvalidCapitalErr = errors.New("invalid Capital, must be one of [AUSTRALIA, BRAZIL, CANADA, CHINA, FRANCE, GERMANY, JAPAN, RUSSIA, UK, USA]")
+	ErrInvalidCapital = errors.New("invalid value for Capital, must be one of [AUSTRALIA, BRAZIL, CANADA, CHINA, FRANCE, GERMANY, JAPAN, RUSSIA, UK, USA]")
 )
 
-func From(c string) (Capital, error) {
+func Values() []Capital {
+	return []Capital{
+		AUSTRALIA,
+		BRAZIL,
+		CANADA,
+		CHINA,
+		FRANCE,
+		GERMANY,
+		JAPAN,
+		RUSSIA,
+		UK,
+		USA,
+	}
+}
+
+func StringValues() []string {
+	return []string{
+		"AUSTRALIA",
+		"BRAZIL",
+		"CANADA",
+		"CHINA",
+		"FRANCE",
+		"GERMANY",
+		"JAPAN",
+		"RUSSIA",
+		"UK",
+		"USA",
+	}
+}
+
+func FromValue(c string) (Capital, error) {
 	switch c {
 	case "Canberra":
 		return AUSTRALIA, nil
@@ -52,12 +84,12 @@ func From(c string) (Capital, error) {
 	case "Washington":
 		return USA, nil
 	default:
-		return _unknown, InvalidCapitalErr
+		return _unknown, ErrInvalidCapital
 	}
 }
 
 func FromName(c string) (Capital, error) {
-	switch c {
+	switch strings.ToUpper(c) {
 	case "AUSTRALIA":
 		return AUSTRALIA, nil
 	case "BRAZIL":
@@ -79,7 +111,7 @@ func FromName(c string) (Capital, error) {
 	case "USA":
 		return USA, nil
 	default:
-		return _unknown, InvalidCapitalErr
+		return _unknown, ErrInvalidCapital
 	}
 }
 
@@ -119,5 +151,5 @@ func (c Capital) Code() string {
 }
 
 func (c Capital) Repr() string {
-	return _enumName + "(" + c.String() + ")"
+	return fmt.Sprintf("%s(%q)", _enumName, string(c))
 }

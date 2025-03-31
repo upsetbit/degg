@@ -26,4 +26,5 @@ run program *args:
     @./bin/{{ program }} {{ args }}
 
 test:
-    @go test -v ./...
+    @echo "Running tests (excluding examples)..."
+    @go test -v $(go list ./... | grep -v /examples/)

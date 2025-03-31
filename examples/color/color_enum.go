@@ -2,6 +2,8 @@ package color
 
 import (
 	"errors"
+	"fmt"
+	"strings"
 )
 
 type (
@@ -21,10 +23,30 @@ const (
 )
 
 var (
-	InvalidColorErr = errors.New("invalid Color, must be one of [RED, BLUE, GREEN, WHITE, BLACK]")
+	ErrInvalidColor = errors.New("invalid value for Color, must be one of [RED, BLUE, GREEN, WHITE, BLACK]")
 )
 
-func From(c string) (Color, error) {
+func Values() []Color {
+	return []Color{
+		RED,
+		BLUE,
+		GREEN,
+		WHITE,
+		BLACK,
+	}
+}
+
+func StringValues() []string {
+	return []string{
+		"RED",
+		"BLUE",
+		"GREEN",
+		"WHITE",
+		"BLACK",
+	}
+}
+
+func FromValue(c string) (Color, error) {
 	switch c {
 	case "RED":
 		return RED, nil
@@ -37,12 +59,12 @@ func From(c string) (Color, error) {
 	case "BLACK":
 		return BLACK, nil
 	default:
-		return _unknown, InvalidColorErr
+		return _unknown, ErrInvalidColor
 	}
 }
 
 func FromName(c string) (Color, error) {
-	switch c {
+	switch strings.ToUpper(c) {
 	case "RED":
 		return RED, nil
 	case "BLUE":
@@ -54,7 +76,7 @@ func FromName(c string) (Color, error) {
 	case "BLACK":
 		return BLACK, nil
 	default:
-		return _unknown, InvalidColorErr
+		return _unknown, ErrInvalidColor
 	}
 }
 
@@ -84,5 +106,5 @@ func (c Color) Code() string {
 }
 
 func (c Color) Repr() string {
-	return _enumName + "(" + c.String() + ")"
+	return fmt.Sprintf("%s(%q)", _enumName, string(c))
 }

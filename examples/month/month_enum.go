@@ -2,6 +2,8 @@ package month
 
 import (
 	"errors"
+	"fmt"
+	"strings"
 )
 
 type (
@@ -11,27 +13,61 @@ type (
 const (
 	_enumName = "Month"
 
-	JANUARY Month = iota
-	FEBRUARY
-	MARCH
-	APRIL
-	MAY
-	JUNE
-	JULY
-	AUGUST
-	SEPTEMBER
-	OCTOBER
-	NOVEMBER
-	DECEMBER
+	JANUARY   Month = 0
+	FEBRUARY  Month = 1
+	MARCH     Month = 2
+	APRIL     Month = 3
+	MAY       Month = 4
+	JUNE      Month = 5
+	JULY      Month = 6
+	AUGUST    Month = 7
+	SEPTEMBER Month = 8
+	OCTOBER   Month = 9
+	NOVEMBER  Month = 10
+	DECEMBER  Month = 11
 
-	_unknown Month = -1
+	_unknown Month = 0
 )
 
 var (
-	InvalidMonthErr = errors.New("invalid Month, must be one of [JANUARY, FEBRUARY, MARCH, APRIL, MAY, JUNE, JULY, AUGUST, SEPTEMBER, OCTOBER, NOVEMBER, DECEMBER]")
+	ErrInvalidMonth = errors.New("invalid value for Month, must be one of [JANUARY, FEBRUARY, MARCH, APRIL, MAY, JUNE, JULY, AUGUST, SEPTEMBER, OCTOBER, NOVEMBER, DECEMBER]")
 )
 
-func From(m int) (Month, error) {
+func Values() []Month {
+	return []Month{
+		JANUARY,
+		FEBRUARY,
+		MARCH,
+		APRIL,
+		MAY,
+		JUNE,
+		JULY,
+		AUGUST,
+		SEPTEMBER,
+		OCTOBER,
+		NOVEMBER,
+		DECEMBER,
+	}
+}
+
+func StringValues() []string {
+	return []string{
+		"JANUARY",
+		"FEBRUARY",
+		"MARCH",
+		"APRIL",
+		"MAY",
+		"JUNE",
+		"JULY",
+		"AUGUST",
+		"SEPTEMBER",
+		"OCTOBER",
+		"NOVEMBER",
+		"DECEMBER",
+	}
+}
+
+func FromValue(m int) (Month, error) {
 	switch m {
 	case 0:
 		return JANUARY, nil
@@ -58,12 +94,12 @@ func From(m int) (Month, error) {
 	case 11:
 		return DECEMBER, nil
 	default:
-		return _unknown, InvalidMonthErr
+		return _unknown, ErrInvalidMonth
 	}
 }
 
 func FromName(m string) (Month, error) {
-	switch m {
+	switch strings.ToUpper(m) {
 	case "JANUARY":
 		return JANUARY, nil
 	case "FEBRUARY":
@@ -89,7 +125,7 @@ func FromName(m string) (Month, error) {
 	case "DECEMBER":
 		return DECEMBER, nil
 	default:
-		return _unknown, InvalidMonthErr
+		return _unknown, ErrInvalidMonth
 	}
 }
 
@@ -120,7 +156,7 @@ func (m Month) String() string {
 	case DECEMBER:
 		return "DECEMBER"
 	default:
-		return ""
+		return fmt.Sprintf("Month(%d)", int(m))
 	}
 }
 
@@ -133,5 +169,5 @@ func (m Month) Code() string {
 }
 
 func (m Month) Repr() string {
-	return _enumName + "(" + m.String() + ")"
+	return fmt.Sprintf("%s(%d)", _enumName, int(m))
 }
