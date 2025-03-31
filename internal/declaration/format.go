@@ -7,6 +7,5 @@ type (
 const (
 	JSON Format = iota
 	YAML
-	TOML
 	UNKNOWN
 )

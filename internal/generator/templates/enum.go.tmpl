@@ -1,0 +1,88 @@
+package {{.Package}}
+
+import (
+	"errors"
+)
+
+type (
+	{{.EnumName}} string
+)
+
+const (
+	_enumName = "{{.EnumName}}"
+
+	RED   {{.EnumName}} = "RED"
+	BLUE  {{.EnumName}} = "BLUE"
+	GREEN {{.EnumName}} = "GREEN"
+	WHITE {{.EnumName}} = "WHITE"
+	BLACK {{.EnumName}} = "BLACK"
+
+	_unknown {{.EnumName}} = ""
+)
+
+var (
+	{{.Error.InvalidValue}} = errors.New("invalid value for {{.EnumName}}, must be one of [{{.EnumValuesListed}}]")
+)
+
+func FromValue({{.EnumNameLetter}} string) ({{.EnumName}}, error) {
+	switch {{.EnumNameLetter}} {
+	case "RED":
+		return RED, nil
+	case "BLUE":
+		return BLUE, nil
+	case "GREEN":
+		return GREEN, nil
+	case "WHITE":
+		return WHITE, nil
+	case "BLACK":
+		return BLACK, nil
+	default:
+		return _unknown, InvalidColorErr
+	}
+}
+
+func FromName({{.EnumNameLetter}} string) ({{.EnumName}}, error) {
+	switch {{.EnumNameLetter}} {
+	case "RED":
+		return RED, nil
+	case "BLUE":
+		return BLUE, nil
+	case "GREEN":
+		return GREEN, nil
+	case "WHITE":
+		return WHITE, nil
+	case "BLACK":
+		return BLACK, nil
+	default:
+		return _unknown, InvalidColorErr
+	}
+}
+
+func ({{.EnumNameLetter}} {{.EnumName}}) String() string {
+	return string({{.EnumNameLetter}})
+}
+
+func ({{.EnumNameLetter}} {{.EnumName}}) Int() int {
+	switch {{.EnumNameLetter}} {
+	case RED:
+		return 0
+	case BLUE:
+		return 1
+	case GREEN:
+		return 2
+	case WHITE:
+		return 3
+	case BLACK:
+		return 4
+	default:
+		return -1
+	}
+}
+
+func ({{.EnumNameLetter}} {{.EnumName}}) Code() string {
+	return _enumName + "." + {{.EnumNameLetter}}.String()
+}
+
+func ({{.EnumNameLetter}} {{.EnumName}}) Repr() string {
+	return _enumName + "(" + {{.EnumNameLetter}}.String() + ")"
+}

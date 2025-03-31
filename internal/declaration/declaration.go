@@ -6,7 +6,6 @@ import (
 	"fmt"
 
 	// 3rd-party
-	"github.com/pelletier/go-toml/v2"
 	"gopkg.in/yaml.v3"
 )
 
@@ -14,11 +13,11 @@ type (
 	named map[string]string
 
 	Declaration struct {
-		Name        string   `json:"name" yaml:"name" toml:"name"`
-		Package     string   `json:"package" yaml:"package" toml:"package"`
-		Type        string   `json:"type" yaml:"type" toml:"type"`
-		Values      []string `json:"values" yaml:"values" toml:"values"`
-		NamedValues named    `json:"named-values" yaml:"named-values" toml:"named-values"`
+		Name        string   `json:"name" yaml:"name"`
+		Package     string   `json:"package" yaml:"package"`
+		Type        string   `json:"type" yaml:"type"`
+		Values      []string `json:"values" yaml:"values"`
+		NamedValues []named  `json:"named-values" yaml:"named-values"`
 	}
 )
 
@@ -31,8 +30,6 @@ func From(data []byte, format Format) (*Declaration, error) {
 		err = json.Unmarshal(data, &d)
 	case YAML:
 		err = yaml.Unmarshal(data, &d)
-	case TOML:
-		err = toml.Unmarshal(data, &d)
 	default:
 		return nil, fmt.Errorf("unsupported format: %d", format)
 	}
@@ -47,13 +44,52 @@ func From(data []byte, format Format) (*Declaration, error) {
 func (d *Declaration) Validate() (bool, []error) {
 	var errs []error
 
+	// --------------------------------------------------------------------------------------------
 	if d.Name == "" {
-		errs = append(errs, fmt.Errorf("name is required"))
+		errs = append(errs, fmt.Errorf("'name' cannot be empty"))
+	}
+	if !isEnumNameValid(d.Name) {
+		errs = append(errs, fmt.Errorf("'name' does not conform to naming conventions; must be an alphanumeric string starting with an uppercase letter"))
 	}
 
+	// --------------------------------------------------------------------------------------------
 	if d.Package == "" {
-		errs = append(errs, fmt.Errorf("package is required"))
+		errs = append(errs, fmt.Errorf("'package' cannot be empty"))
+	}
+	if !isPackageNameValid(d.Package) {
+		errs = append(errs, fmt.Errorf("'package' does not conform to naming conventions; must contain only lowercase letters and underscores"))
 	}
 
+	// --------------------------------------------------------------------------------------------
+	if len(d.Values) > 0 && len(d.NamedValues) > 0 {
+		errs = append(errs, fmt.Errorf("must have either values or named-values, not both"))
+	}
+
+	keys := d.getKeys()
+	if len(keys) == 0 {
+		errs = append(errs, fmt.Errorf("must have at least one value or named-value"))
+	}
+	for _, k := range keys {
+		if !isEnumKeyValid(k) {
+			errs = append(errs, fmt.Errorf("item '%s' does not conform to naming conventions; must be an alphanumeric string starting with an uppercase letter", k))
+		}
+	}
+
+	// --------------------------------------------------------------------------------------------
 	return len(errs) == 0, errs
+}
+
+func (d *Declaration) getKeys() []string {
+	var keys []string
+	if len(d.Values) > 0 {
+		keys = append(keys, d.Values...)
+	}
+	if len(d.NamedValues) > 0 {
+		for _, nv := range d.NamedValues {
+			for k := range nv {
+				keys = append(keys, k)
+			}
+		}
+	}
+	return keys
 }

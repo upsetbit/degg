@@ -3,13 +3,13 @@ package: capital
 type: string
 
 named-values:
-  AUSTRALIA: Canberra
-  BRAZIL: Brasilia
-  CANADA: Ottawa
-  CHINA: Beijing
-  FRANCE: Paris
-  GERMANY: Berlin
-  JAPAN: Tokyo
-  RUSSIA: Moscow
-  UK: London
-  USA: Washington
+  - AUSTRALIA: Canberra
+  - BRAZIL: Brasilia
+  - CANADA: Ottawa
+  - CHINA: Beijing
+  - FRANCE: Paris
+  - GERMANY: Berlin
+  - JAPAN: Tokyo
+  - RUSSIA: Moscow
+  - UK: London
+  - USA: Washington

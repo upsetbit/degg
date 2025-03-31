@@ -22,8 +22,6 @@ func identifyInputFormat(inputFile string) (declaration.Format, error) {
 		return declaration.JSON, nil
 	case ".yaml", ".yml":
 		return declaration.YAML, nil
-	case ".toml":
-		return declaration.TOML, nil
 	}
 
 	return declaration.UNKNOWN, fmt.Errorf("unsupported input format '%s'; must be '.json', '.yaml' or '.toml'", ext)
